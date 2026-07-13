@@ -1,6 +1,6 @@
 [project]
 name = "omv-mcp"
-version = "0.2.0"
+version = "0.2.1"
 description = "MCP server for managing an OpenMediaVault NAS. Runs ON the NAS; consumed over stdio-over-SSH."
 license = { file = "LICENSE" }
 authors = [{ name = "Naveen Busiraju" }]
