@@ -9,6 +9,7 @@ dependencies = [
     "mcp>=1.28,<2",
     "requests>=2.31",
     "python-dotenv>=1.0",
+    "paramiko>=3.4",
 ]
 
 [project.scripts]
