@@ -152,7 +152,7 @@ def ensure_passwordless_ssh() -> paramiko.SSHClient:
         client = _connect()
     except paramiko.AuthenticationException as e:
         raise SystemExit(f"Key installed but key-login still fails: {e}")
-    _ok("public key installed — passwordless SSH verified")
+    _ok("public key installed - passwordless SSH verified")
     return client
 
 
@@ -177,9 +177,9 @@ def live_verify() -> None:
 
     r = run_local(["docker", "ps", "-q"], timeout=30)
     if r["exit_code"] == 0:
-        _ok(f"docker reachable — {len(r['stdout'].split())} running containers")
+        _ok(f"docker reachable - {len(r['stdout'].split())} running containers")
     else:
-        _fail(f"docker not reachable ({r['stderr'].strip()[:80]}) — "
+        _fail(f"docker not reachable ({r['stderr'].strip()[:80]}) - "
               "container tools will not work")
 
 
@@ -188,7 +188,7 @@ def verify_portainer() -> bool:
 
     try:
         stacks = list_stacks()
-        _ok(f"Portainer reachable — {len(stacks)} stacks")
+        _ok(f"Portainer reachable - {len(stacks)} stacks")
         return True
     except Exception as e:
         _fail(f"Portainer check failed: {e}")
@@ -250,7 +250,7 @@ def deploy_on_nas(client: paramiko.SSHClient, portainer_key: str) -> str:
     if code == 0:
         _ok(f"NAS can run: omv-mcp {out.strip()}")
     else:
-        _fail(f"pre-warm failed ({err.strip()[:100]}) — first client connect "
+        _fail(f"pre-warm failed ({err.strip()[:100]}) - first client connect "
               "will be slow or fail until `uvx omv-mcp` resolves")
     return uvx_path
 
@@ -287,7 +287,7 @@ def register_clients(command: list[str]) -> None:
         else:
             _fail(f"claude mcp add failed: {(res.stderr or res.stdout).strip()[:200]}")
     else:
-        _say("  Claude Code CLI not found — register manually:")
+        _say("  Claude Code CLI not found - register manually:")
         _say(f"    claude mcp add omv -- {' '.join(command)}")
 
     import json
@@ -315,7 +315,7 @@ def register_clients(command: list[str]) -> None:
 # --------------------------------------------------------------------------
 
 def run_setup(dev: bool = False) -> None:
-    _say("\nomv-mcp setup — connect this machine to your OpenMediaVault NAS\n")
+    _say("\nomv-mcp setup - connect this machine to your OpenMediaVault NAS\n")
 
     config.OMV_HOST = _ask("  OMV host or IP (LAN IP like 192.168.x.x; Tailscale IPs "
                            "usually work too)", config.OMV_HOST)

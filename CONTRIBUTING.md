@@ -17,24 +17,24 @@ make changes, and open a pull request.
 
 ```bash
 git clone https://github.com/vnaveenb/openmediavault-mcp-ssh.git
-cd openmediavault-mcp-ssh/omv-mcp
+cd openmediavault-mcp-ssh
 uv sync                                  # creates .venv with Python 3.12 + deps
 ```
 
-Copy the env template if you're testing Portainer tools:
+Run `uv run omv-mcp setup --dev` to point your MCP client at this checkout
+(instead of the PyPI package) and write a `config.env` — see the README's
+Configuration section. `.env.example` documents every key.
+
+## Running the tests
 
 ```bash
-cp .env.example .env    # paste your real PORTAINER_API_KEY (never commit .env)
+uv run pytest                            # unit tests, no NAS needed
+uv run python tests/smoke_client.py      # live smoke test against your NAS
 ```
 
-## Running the smoke test
-
-```bash
-uv run python tests/smoke_client.py
-```
-
-This spawns the server over stdio, lists tools, and calls a few read-only tools
-against live data. Run it before and after your change.
+The smoke test spawns the server over stdio (in whichever mode your
+`config.env` selects), lists tools, and calls a few read-only ones against
+live data. Run it before and after your change.
 
 ## Branching strategy (GitHub Flow)
 
