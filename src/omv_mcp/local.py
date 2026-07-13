@@ -13,7 +13,7 @@ NAS*, wherever this process happens to run.
 import os
 import subprocess
 
-from .config import OMV_HOST
+from . import config  # late-bound so setup can inject connection details
 
 # Non-login shells (e.g. `ssh host -- python ...`) get a minimal PATH; make sure
 # /usr/sbin (omv-rpc) and /usr/bin (docker) are reachable regardless.
@@ -26,7 +26,7 @@ _ENV = {
 
 def run_local(argv, timeout=60, input_text=None):
     """Run an argv list (no shell) on the NAS; return {stdout, stderr, exit_code}."""
-    if OMV_HOST:
+    if config.OMV_HOST:
         from .ssh_remote import run_remote  # lazy: Mode A never touches paramiko
 
         return run_remote(argv, timeout=timeout, input_text=input_text)

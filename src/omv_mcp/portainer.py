@@ -7,14 +7,14 @@ the stack tools; requires PORTAINER_API_KEY in the config.
 
 import requests
 
-from .config import OMV_HOST, PORTAINER_API_KEY, PORTAINER_ENDPOINT_ID, PORTAINER_URL
+from . import config  # late-bound so setup can inject the API key
 
 
 def _base_url() -> str:
     """Explicit PORTAINER_URL wins; else SSH tunnel in Mode B, localhost in Mode A."""
-    if PORTAINER_URL:
-        return PORTAINER_URL
-    if OMV_HOST:
+    if config.PORTAINER_URL:
+        return config.PORTAINER_URL
+    if config.OMV_HOST:
         from .tunnel import tunnel_url  # lazy: starts the forwarder on first use
 
         return tunnel_url()
@@ -22,13 +22,13 @@ def _base_url() -> str:
 
 
 def _session() -> requests.Session:
-    if not PORTAINER_API_KEY:
+    if not config.PORTAINER_API_KEY:
         raise RuntimeError(
             "PORTAINER_API_KEY is not set. Run `omv-mcp setup` (or add it to "
             "the config.env / .env) to enable the Portainer stack tools."
         )
     s = requests.Session()
-    s.headers.update({"X-API-Key": PORTAINER_API_KEY})
+    s.headers.update({"X-API-Key": config.PORTAINER_API_KEY})
     return s
 
 
@@ -54,7 +54,7 @@ def start_stack(stack_id: int):
     """Start a stopped stack. Returns the stack JSON (409 if already running)."""
     r = _session().post(
         f"{_base_url()}/stacks/{stack_id}/start",
-        params={"endpointId": PORTAINER_ENDPOINT_ID},
+        params={"endpointId": config.PORTAINER_ENDPOINT_ID},
         timeout=180,
     )
     r.raise_for_status()
@@ -65,7 +65,7 @@ def stop_stack(stack_id: int):
     """Stop a running stack (takes its containers down). 409 if already stopped."""
     r = _session().post(
         f"{_base_url()}/stacks/{stack_id}/stop",
-        params={"endpointId": PORTAINER_ENDPOINT_ID},
+        params={"endpointId": config.PORTAINER_ENDPOINT_ID},
         timeout=180,
     )
     r.raise_for_status()
@@ -86,7 +86,7 @@ def update_stack(stack_id: int, compose: str, prune: bool = False, pull_image: b
     }
     r = s.put(
         f"{_base_url()}/stacks/{stack_id}",
-        params={"endpointId": PORTAINER_ENDPOINT_ID},
+        params={"endpointId": config.PORTAINER_ENDPOINT_ID},
         json=body,
         timeout=180,
     )

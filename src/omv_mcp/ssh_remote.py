@@ -19,7 +19,11 @@ import time
 
 import paramiko
 
-from .config import OMV_HOST, OMV_SSH_KEY, OMV_SSH_PORT, OMV_SSH_USER, config_dir
+# Late-bound module attributes (config.OMV_HOST, ...) rather than import-time
+# constants, so `omv-mcp setup` can inject the just-entered connection details
+# and verify through this exact code path.
+from . import config
+from .config import config_dir
 
 log = logging.getLogger(__name__)
 
@@ -55,16 +59,19 @@ def _connect() -> paramiko.SSHClient:
         client.load_host_keys(str(known_hosts))
     client.set_missing_host_key_policy(_TofuPolicy(known_hosts))
     client.connect(
-        OMV_HOST,
-        port=OMV_SSH_PORT,
-        username=OMV_SSH_USER,
-        key_filename=OMV_SSH_KEY or None,
+        config.OMV_HOST,
+        port=config.OMV_SSH_PORT,
+        username=config.OMV_SSH_USER,
+        key_filename=config.OMV_SSH_KEY or None,
         allow_agent=True,
         look_for_keys=True,
         timeout=15,
     )
     client.get_transport().set_keepalive(30)
-    log.info("SSH connected to %s@%s:%s", OMV_SSH_USER, OMV_HOST, OMV_SSH_PORT)
+    log.info(
+        "SSH connected to %s@%s:%s",
+        config.OMV_SSH_USER, config.OMV_HOST, config.OMV_SSH_PORT,
+    )
     return client
 
 
