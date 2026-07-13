@@ -1,17 +1,24 @@
 """Portainer REST API wrappers (stacks + a container listing fallback).
 
-Reached locally at http://localhost:9000/api on the NAS. Only used by the stack
-tools; requires PORTAINER_API_KEY in the NAS .env.
+Reached at localhost:9000 in Mode A (on the NAS) or through the SSH tunnel in
+Mode B (see tunnel.py); an explicit PORTAINER_URL overrides both. Only used by
+the stack tools; requires PORTAINER_API_KEY in the config.
 """
 
 import requests
 
-from .config import PORTAINER_API_KEY, PORTAINER_ENDPOINT_ID, PORTAINER_URL
+from .config import OMV_HOST, PORTAINER_API_KEY, PORTAINER_ENDPOINT_ID, PORTAINER_URL
 
 
 def _base_url() -> str:
-    """Explicit PORTAINER_URL wins; otherwise the on-NAS default."""
-    return PORTAINER_URL or "http://localhost:9000/api"
+    """Explicit PORTAINER_URL wins; else SSH tunnel in Mode B, localhost in Mode A."""
+    if PORTAINER_URL:
+        return PORTAINER_URL
+    if OMV_HOST:
+        from .tunnel import tunnel_url  # lazy: starts the forwarder on first use
+
+        return tunnel_url()
+    return "http://localhost:9000/api"
 
 
 def _session() -> requests.Session:
