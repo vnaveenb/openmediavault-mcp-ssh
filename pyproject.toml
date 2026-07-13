@@ -1,6 +1,6 @@
 [project]
 name = "omv-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP server for managing an OpenMediaVault NAS. Runs ON the NAS; consumed over stdio-over-SSH."
 license = { file = "LICENSE" }
 authors = [{ name = "Naveen Busiraju" }]
@@ -9,10 +9,14 @@ dependencies = [
     "mcp>=1.28,<2",
     "requests>=2.31",
     "python-dotenv>=1.0",
+    "paramiko>=3.4",
 ]
 
 [project.scripts]
 omv-mcp = "omv_mcp.__main__:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
 
 [build-system]
 requires = ["hatchling"]
